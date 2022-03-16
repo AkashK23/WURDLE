@@ -1,42 +1,63 @@
 import wordList from "./wordList.js";
+String.prototype.hashCode = function() {
+  var hash = 0, i, chr;
+  if (this.length === 0) return hash;
+  for (i = 0; i < this.length; i++) {
+    chr   = this.charCodeAt(i);
+    hash  = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+};
 document.addEventListener("DOMContentLoaded", () => {
   createSquares();
   
-
+  let finished = false;
   let guessedWords = [[]];
   let availableSpace = 1;
+  let guessedWordCount = 0;
 
   let word;
+  let event = new Date();
+  let dateStr = event.toLocaleDateString();
   getNewWord();
-  // console.log(word);
-  // console.log("here")
-  let guessedWordCount = 0;
+
+  if (localStorage.getItem("date") === dateStr) {
+    prePopulate();
+  } else { 
+    dePopulate();
+    localStorage.setItem("date", dateStr);
+  }
+  
 
   const keys = document.querySelectorAll(".keyboard-row button");
 
+  function dePopulate() {
+    let letterId = 1;
+    while (localStorage.getItem(String(letterId))) {
+      localStorage.removeItem(String(letterId));
+      letterId = letterId + 1;
+    }
+    localStorage.removeItem("finished");
+  }
+
+  function prePopulate() {
+    let letterId = 1;
+    while (localStorage.getItem(String(letterId))) {
+      let prevLetter = localStorage.getItem(String(letterId));
+      updateGuessedWords(prevLetter);
+      letterId = letterId + 1;
+      if (letterId % 5 == 1 && letterId > 5) {
+        preApprovedWords();
+      }
+    }
+    finished = localStorage.getItem("finished") === "done";
+  }
+
   function getNewWord() {
     // console.log(wordList[Math.floor(Math.random() * 2316)]);
-    word = wordList[Math.floor(Math.random() * 2316)];
+    word = wordList[dateStr.hashCode() % 2316];
 
-    // fetch(
-    //   `https://wordsapiv1.p.rapidapi.com/words/?random=true&lettersMin=5&lettersMax=5`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       "x-rapidapi-host": "wordsapiv1.p.rapidapi.com",
-    //       "x-rapidapi-key": "<YOUR_KEY_GOES_HERE>",
-    //     },
-    //   }
-    // )
-    //   .then((response) => {
-    //     return response.json();
-    //   })
-    //   .then((res) => {
-    //     word = res.word;
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //   });
   }
 
   function getCurrentWordArr() {
@@ -46,15 +67,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateGuessedWords(letter) {
     const currentWordArr = getCurrentWordArr();
-
     if (currentWordArr && currentWordArr.length < 5) {
       currentWordArr.push(letter);
 
       const availableSpaceEl = document.getElementById(String(availableSpace));
-
+      localStorage.setItem(String(availableSpace), letter);
       availableSpace = availableSpace + 1;
       availableSpaceEl.textContent = letter;
     }
+  }
+
+  function preApprovedWords() {
+    const currentWordArr = getCurrentWordArr();
+    const firstLetterId = guessedWordCount * 5 + 1;
+    const interval = 200;
+    currentWordArr.forEach((letter, index) => {
+      setTimeout(() => {
+        const tileColor = getTileColor(letter, index);
+
+        const letterId = firstLetterId + index;
+        const letterEl = document.getElementById(letterId);
+        letterEl.classList.add("animate__flipInX");
+        letterEl.style = `background-color:${tileColor};border-color:${tileColor}`;
+      }, interval * index);
+    });
+
+    guessedWordCount += 1;
+    guessedWords.push([]);
   }
 
   function getTileColor(letter, index) {
@@ -132,12 +171,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (currentWord === word) {
           window.alert("Congratulations!");
-        }
-
-        if (guessedWords.length === 6) {
+          finished = true;
+          localStorage.setItem("finished", "done")
+        } else if (guessedWords.length === 6) {
           window.alert(`Sorry, you have no more guesses! The word is ${word}.`);
+          finished = true;
+          localStorage.setItem("finished", "done")
         }
-
         guessedWords.push([]);
       })
       .catch(() => {
@@ -159,31 +199,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleDeleteLetter() {
     const currentWordArr = getCurrentWordArr();
+    if (availableSpace % 5 == 1 && currentWordArr.length == 0) {
+      return;
+    }
     const removedLetter = currentWordArr.pop();
 
     guessedWords[guessedWords.length - 1] = currentWordArr;
 
     const lastLetterEl = document.getElementById(String(availableSpace - 1));
-
+    
     lastLetterEl.textContent = "";
     availableSpace = availableSpace - 1;
+    localStorage.removeItem(String(availableSpace));
   }
 
   for (let i = 0; i < keys.length; i++) {
     keys[i].onclick = ({ target }) => {
       const letter = target.getAttribute("data-key");
-
-      if (letter === "enter") {
-        handleSubmitWord();
-        return;
-      }
-
-      if (letter === "del") {
-        handleDeleteLetter();
-        return;
-      }
-
-      updateGuessedWords(letter);
+      if (!finished) {
+        if (letter === "enter") {
+          handleSubmitWord();
+          return;
+        }
+  
+        if (letter === "del") {
+          handleDeleteLetter();
+          return;
+        }
+  
+        updateGuessedWords(letter);
+      } 
     };
   }
 });
