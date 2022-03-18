@@ -12,7 +12,7 @@ String.prototype.hashCode = function() {
 document.addEventListener("DOMContentLoaded", () => {
   createSquares();
   
-  let finished = true;
+  let finished = false;
   let guessedWords = [[]];
   let availableSpace = 1;
   let guessedWordCount = 0;
