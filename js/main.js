@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const share = document.getElementById("shareButton");
   share.onclick = () => {
+    console.log("here share no solve");
     alert("Solve WUrdle first");
   };
 
