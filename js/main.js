@@ -253,6 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   for (let i = 0; i < keys.length; i++) {
+    // console.log(finished);
     keys[i].onclick = ({ target }) => {
       const letter = target.getAttribute("data-key");
       if (!finished) {
