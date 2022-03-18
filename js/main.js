@@ -216,7 +216,11 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (guessedWords.length === 6) {
           window.alert(`Sorry, you have no more guesses! The word is ${word}.`);
           finished = true;
-          localStorage.setItem("finished", "done")
+          localStorage.setItem("finished", "done");
+          share.onclick = () => {
+            navigator.clipboard.writeText(copyText());
+            alert("copied text");
+          };
         }
         guessedWords.push([]);
       })
