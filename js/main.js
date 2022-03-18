@@ -12,7 +12,7 @@ String.prototype.hashCode = function() {
 document.addEventListener("DOMContentLoaded", () => {
   createSquares();
   
-  let finished = false;
+  let finished = true;
   let guessedWords = [[]];
   let availableSpace = 1;
   let guessedWordCount = 0;
@@ -21,6 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let event = new Date();
   let dateStr = event.toLocaleDateString();
   getNewWord();
+  // console.log(word)
+
+  const share = document.getElementById("shareButton");
+  share.onclick = () => {
+    alert("Solve WUrdle first");
+  };
 
   if (localStorage.getItem("date") === dateStr) {
     prePopulate();
@@ -28,9 +34,29 @@ document.addEventListener("DOMContentLoaded", () => {
     dePopulate();
     localStorage.setItem("date", dateStr);
   }
-  
 
   const keys = document.querySelectorAll(".keyboard-row button");
+  
+  function copyText() {
+    let copyStr = "";
+
+    for (let i = 0; i < guessedWords.length; i++) {
+      for (let j = 0; j < guessedWords[i].length; j++) {
+        if (guessedWords[i][j] == word[j]) {
+          copyStr = copyStr + String.fromCodePoint(0x1F7E9);
+        } else if (closeToLetter(guessedWords[i][j], j)) {
+          copyStr = copyStr + String.fromCodePoint(0x1F7E8);
+        } else {
+          copyStr = copyStr + String.fromCodePoint(0x2B1B);
+        }
+      }
+      copyStr = copyStr + "\n";
+    }
+    copyStr = copyStr + "\n";
+    copyStr = copyStr + "Krishna Productions (not BWU)";
+    copyStr = copyStr + "https://akashk23.github.io/WURDLE/";
+    return copyStr;
+  }
 
   function dePopulate() {
     let letterId = 1;
@@ -52,6 +78,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     finished = localStorage.getItem("finished") === "done";
+    if (finished) {
+      share.onclick = () => {
+        navigator.clipboard.writeText(copyText());
+        alert("copied text");
+      };
+    }
   }
 
   function getNewWord() {
@@ -173,6 +205,10 @@ document.addEventListener("DOMContentLoaded", () => {
           window.alert("Congratulations!");
           finished = true;
           localStorage.setItem("finished", "done")
+          share.onclick = () => {
+            navigator.clipboard.writeText(copyText());
+            alert("copied text");
+          };
         } else if (guessedWords.length === 6) {
           window.alert(`Sorry, you have no more guesses! The word is ${word}.`);
           finished = true;
