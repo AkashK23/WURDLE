@@ -30,15 +30,15 @@ header {
   border-bottom: 1px solid rgb(58, 58, 60);
 }
 
-.title {
+/* .title {
   color: gainsboro;
-  font-size: 2.5rem;
+  font-size: 2.3rem;
   font-weight: bold;
   margin: 0.4rem 0 0.4rem 0;
   text-align: center;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-}
+} */
 
 #board-container {
   display: flex;
@@ -73,6 +73,45 @@ header {
 #keyboard-container {
   height: 200px;
 }
+
+.title-row {
+  display: flex;
+  justify-content: center;
+  height: 40px;
+  width: 100%;
+  margin: 0 auto 8px;
+  margin-left: 52px;
+  touch-action: manipulation;
+}
+
+.title-row h1 {
+  color: gainsboro;
+  font-size: 2.3rem;
+  font-weight: bold;
+  margin: 0.4rem 0 0.4rem 0;
+  text-align: center;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.title-row button {
+  font-family: inherit;
+  font-weight: bold;
+  border: 0;
+  justify-content: right;
+  padding: 0;
+  height: 45px;
+  cursor: pointer;
+  background-color: rgb(129, 131, 132);
+  color: rgb(215, 218, 220);
+  /* flex-grow: 1; */
+  text-transform: uppercase;
+  margin-left: 60px;
+  border-radius: 4px;
+  user-select: none;
+}
+
+
 
 .keyboard-row {
   display: flex;
