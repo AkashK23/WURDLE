@@ -24,10 +24,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // console.log(word)
 
   const share = document.getElementById("shareButton");
+  console.log(share);
   share.onclick = () => {
     console.log("here share no solve");
     alert("Solve WUrdle first");
   };
+  console.log(share);
 
   if (localStorage.getItem("date") === dateStr) {
     prePopulate();
