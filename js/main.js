@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     copyStr = copyStr + "\n";
     copyStr = copyStr + "Krishna Productions (not BWU)";
+    copyStr = copyStr + "\n";
     copyStr = copyStr + "https://akashk23.github.io/WURDLE/";
     return copyStr;
   }
